@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+
+	<!-- Earnings (Monthly) Card Example -->
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-primary shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+							Number of Lessons</div>
+						<div class="h5 mb-0 font-weight-bold text-gray-800">{{ num_courses }}</div>
+					</div>
+					<div class="col-auto">
+						<i class="fa fa-book fa-2x text-gray-300" aria-hidden="true"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Earnings (Monthly) Card Example -->
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-success shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+							Number of Users</div>
+						<div class="h5 mb-0 font-weight-bold text-gray-800">{{ num_users }}</div>
+					</div>
+					<div class="col-auto">
+						<i class="fa fa-users fa-2x text-gray-300"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Learners -->
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-success shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+							Number of Learners</div>
+						<div class="h5 mb-0 font-weight-bold text-gray-800">{{ num_enrolled }}</div>
+					</div>
+					<div class="col-auto">
+						<i class="fa fa-slideshare fa-2x text-gray-300"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Certs -->
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-info shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Certs
+						</div>
+						<div class="row no-gutters align-items-center">
+							<div class="col-auto">
+								<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ num_enrolled }}</div>
+							</div>
+							<div class="col">
+								<div class="progress progress-sm mr-2">
+									<div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-auto">
+						<i class="fa fa-graduation-cap fa-2x text-gray-300"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="row">
+
+	<!-- Area Chart -->
+	<div class="col-xl-4 col-lg-7">
+		<div class="card shadow mb-4">
+			<!-- Card Body -->
+			<div class="card-body">
+				<div id="chart1"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Area Chart -->
+	<div class="col-xl-4 col-lg-7">
+		<div class="card shadow mb-4">
+			<!-- Card Body -->
+			<div class="card-body">
+				<div id="chart2"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Area Chart -->
+	<div class="col-xl-4 col-lg-7">
+		<div class="card shadow mb-4">
+			<!-- Card Body -->
+			<div class="card-body">
+				<div id="chart3"></div>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+
+<div class="row">
+
+	<!-- Badges -->
+	<div class="col-xl-6 col-lg-7">
+		<div class="card shadow mb-4">
+			<!-- Card Body -->
+			<div class="card-body">
+				<div id=""></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Map -->
+	<div class="col-xl-6 col-lg-7">
+		<div class="card shadow mb-4">
+			<!-- Card Body -->
+			<div class="card-body">
+				<div id="chart4"></div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+
+<!-- plotly CDN -->
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+
+        var graphs1 = {{ graph1JSON | safe}};
+        Plotly.plot("chart1", graphs1,{});
+        var graphs2 = {{ graph2JSON | safe}};
+        Plotly.plot("chart2", graphs2,{});
+        var graphs3 = {{ graph3JSON | safe}};
+        Plotly.plot("chart3", graphs3,{});
+        var graphs4 = {{ graph4JSON | safe}};
+        Plotly.plot("chart4", graphs4,{});
+
+    </script>
+
+{% endblock %}
