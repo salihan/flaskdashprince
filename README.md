@@ -10,7 +10,8 @@ The dashboard includes:
 - A scatter plot showing the monthly count of new user registration
 - A scatter plot showing the monthly access frequency to the platform
 - A choropleth map showing the number of users in each country
-The data is extracted from a MySQL database using SQLAlchemy and processed using pandas library. The charts are generated using Plotly and are rendered as JSON objects in the Flask application.
+
+Note: The data is extracted from a MySQL database using SQLAlchemy and processed using pandas library. The charts are generated using Plotly and are rendered as JSON objects in the Flask application.
 
 Usage
 To use the Moodle Dashboard, follow these steps:
