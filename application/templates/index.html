@@ -5,7 +5,7 @@
 <div class="row">
 
 	<!-- Earnings (Monthly) Card Example -->
-	<div class="col-xl-3 col-md-6 mb-4">
+	<div class="col-xl-3 col-md-6 mb-1">
 		<div class="card border-left-primary shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
@@ -23,7 +23,7 @@
 	</div>
 
 	<!-- Earnings (Monthly) Card Example -->
-	<div class="col-xl-3 col-md-6 mb-4">
+	<div class="col-xl-3 col-md-6 mb-1">
 		<div class="card border-left-success shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
@@ -41,7 +41,7 @@
 	</div>
 
 	<!-- Learners -->
-	<div class="col-xl-3 col-md-6 mb-4">
+	<div class="col-xl-3 col-md-6 mb-1">
 		<div class="card border-left-success shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
@@ -59,7 +59,7 @@
 	</div>
 
 	<!-- Certs -->
-	<div class="col-xl-3 col-md-6 mb-4">
+	<div class="col-xl-3 col-md-6 mb-1">
 		<div class="card border-left-info shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
@@ -91,7 +91,7 @@
 
 	<!-- Area Chart -->
 	<div class="col-xl-4 col-lg-7">
-		<div class="card shadow mb-4">
+		<div class="card shadow mb-1">
 			<!-- Card Body -->
 			<div class="card-body">
 				<div id="chart1"></div>
@@ -101,7 +101,7 @@
 
 	<!-- Area Chart -->
 	<div class="col-xl-4 col-lg-7">
-		<div class="card shadow mb-4">
+		<div class="card shadow mb-1">
 			<!-- Card Body -->
 			<div class="card-body">
 				<div id="chart2"></div>
@@ -111,7 +111,7 @@
 
 	<!-- Area Chart -->
 	<div class="col-xl-4 col-lg-7">
-		<div class="card shadow mb-4">
+		<div class="card shadow mb-1">
 			<!-- Card Body -->
 			<div class="card-body">
 				<div id="chart3"></div>
@@ -127,7 +127,7 @@
 
 	<!-- Badges -->
 	<div class="col-xl-6 col-lg-7">
-		<div class="card shadow mb-4">
+		<div class="card shadow mb-1">
 			<!-- Card Body -->
 			<div class="card-body">
 				<div id=""></div>
@@ -137,7 +137,7 @@
 
 	<!-- Map -->
 	<div class="col-xl-6 col-lg-7">
-		<div class="card shadow mb-4">
+		<div class="card shadow mb-1">
 			<!-- Card Body -->
 			<div class="card-body">
 				<div id="chart4"></div>
@@ -154,6 +154,13 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript">
 
+    	var layout = {
+			height : 400,
+			width : 550,
+			title : 'Demo',
+			tracetoggle: false
+		};
+
         var graphs1 = {{ graph1JSON | safe}};
         Plotly.plot("chart1", graphs1,{});
         var graphs2 = {{ graph2JSON | safe}};
@@ -161,7 +168,7 @@
         var graphs3 = {{ graph3JSON | safe}};
         Plotly.plot("chart3", graphs3,{});
         var graphs4 = {{ graph4JSON | safe}};
-        Plotly.plot("chart4", graphs4,{});
+        Plotly.plot("chart4", graphs4, layout, {displayModeBar: false});
 
     </script>
 
