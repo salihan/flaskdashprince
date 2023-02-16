@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Enrollment Dashboard</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  </head>
+  <body>
+    <div id="chart">{{ chart|safe }}</div>
+    <div>
+      <label for="start_date">Start Date:</label>
+      <input type="text" id="start_date" name="start_date">
+      <label for="end_date">End Date:</label>
+      <input type="text" id="end_date" name="end_date">
+    </div>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+      $(function() {
+        // Initialize the time slider
+        $("#start_date").datepicker({ dateFormat: "yy-mm-dd" });
+        $("#end_date").datepicker({ dateFormat: "yy-mm-dd" });
+
+        // Set the default dates and update the chart
+        var start_date = "{{ start_date }}";
+        var end_date = "{{ end_date }}";
+        $("#start_date").val(start_date);
+        $("#end_date").val(end_date);
+        updateChart(start_date, end_date);
+
+        // Update the chart when the time slider changes
+        $("#start_date, #end_date").change(function() {
+          var start_date = $("#start_date").val();
+          var end_date = $("#end_date").val();
+          updateChart(start_date, end_date);
+        });
+      });
+
+      function updateChart(start_date, end_date) {
+        // Query the data from the server based on the time slider selection
+        var url = "/?start_date=" + start_date + "&end_date=" + end_date;
+        $.getJSON(url, function(data) {
+          // Update the chart data
+          var chart = $("#chart").highcharts();
+          chart.series[0].setData(data);
+        });
+      }
+    </script>
+  </body>
+</html>

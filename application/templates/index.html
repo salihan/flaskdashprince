@@ -127,27 +127,97 @@
 
 	<!-- Badges -->
 	<div class="col-xl-6 col-lg-7">
-		<div class="card shadow mb-1">
-			<!-- Card Body -->
-			<div class="card-body">
-				<div id=""></div>
+
+		<div class="row">
+			<div class="col-lg-4 mb-4">
+				<div class="card h-100 bg-primary text-white shadow">
+					<div class="card-body">
+						<h3>{{df_topbadges.at[0,'bil']}}</h3>
+						<div class="text-white-50 small">{{df_topbadges.at[0,'name']}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-4 mb-4">
+				<div class="card h-100 bg-success text-white shadow">
+					<div class="card-body">
+						<h3>{{df_topbadges.at[1,'bil']}}</h3>
+						<div class="text-white-50 small">{{df_topbadges.at[1,'name']}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-4 mb-4">
+				<div class="card h-100 bg-info text-white shadow">
+					<div class="card-body">
+						<h3>{{df_topbadges.at[2,'bil']}}</h3>
+						<div class="text-white-50 small">{{df_topbadges.at[2,'name']}}</div>
+					</div>
+				</div>
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-lg-4 mb-4">
+				<div class="card h-100 bg-warning text-white shadow">
+					<div class="card-body">
+						<h3>{{df_topbadges.at[3,'bil']}}</h3>
+						<div class="text-white-50 small">{{df_topbadges.at[3,'name']}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-4 mb-4">
+				<div class="card h-100 bg-danger text-white shadow">
+					<div class="card-body">
+						<h3>{{df_topbadges.at[4,'bil']}}</h3>
+						<div class="text-white-50 small">{{df_topbadges.at[4,'name']}}</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-4 mb-4">
+				<div class="card h-100 bg-dark text-white shadow">
+					<div class="card-body">
+						<h3>{{df_topbadges.at[5,'bil']}}</h3>
+						<div class="text-white-50 small">{{df_topbadges.at[5,'name']}}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+<!--		<div class="card shadow mb-1">-->
+<!--			&lt;!&ndash; Card Body &ndash;&gt;-->
+<!--			<div class="card-body">-->
+<!--				<div id="gauge1"></div>-->
+<!--			</div>-->
+<!--		</div>-->
+
+	</div>
+
+	<div class="columnformap">
+		<div id="chart4" style="margin-top: -90px; z-index:-1; position: relative;"></div>
 	</div>
 
 	<!-- Map -->
-	<div class="col-xl-6 col-lg-7">
-		<div class="card shadow mb-1">
-			<!-- Card Body -->
-			<div class="card-body">
-				<div id="chart4"></div>
-			</div>
-		</div>
-	</div>
+<!--	<div class="col-xl-6 col-lg-7">-->
+<!--		<div id="chart4" style="margin-top: -90px; z-index:-1; position: absolute;"></div>-->
+<!--&lt;!&ndash;		<div class="card shadow mb-1">&ndash;&gt;-->
+<!--&lt;!&ndash;			&lt;!&ndash; Card Body &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;			&ndash;&gt;-->
+<!--&lt;!&ndash;			<div class="card-body">&ndash;&gt;-->
+<!--&lt;!&ndash;				&ndash;&gt;-->
+<!--&lt;!&ndash;			</div>&ndash;&gt;-->
+<!--&lt;!&ndash;		</div>&ndash;&gt;-->
+<!--	</div>-->
 
 </div>
 
-
+<style>
+	.columnformap {
+		flex: 1;
+		margin: 0;
+		padding: 0;
+	}
+	#map {
+		height: 100%;
+	}
+</style>
 
 <!-- plotly CDN -->
 
@@ -169,6 +239,17 @@
         Plotly.plot("chart3", graphs3,{});
         var graphs4 = {{ graph4JSON | safe}};
         Plotly.plot("chart4", graphs4, layout, {displayModeBar: false});
+
+
+        flatpickr("#date-slider", {
+			mode: "range",
+			dateFormat: "Y-m-d",
+			onClose: function(selectedDates, dateStr, instance) {
+				var start_date = selectedDates[0].toISOString().split('T')[0];
+				var end_date = selectedDates[1].toISOString().split('T')[0];
+				window.location.search = '?start_date=' + start_date + '&end_date=' + end_date;
+			}
+		});
 
     </script>
 

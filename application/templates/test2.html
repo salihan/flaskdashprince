@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+
+	<!-- Area Chart -->
+	<div class="col-xl-12 col-lg-7">
+		<div class="card shadow mb-1">
+			<!-- Card Body -->
+			<div class="card-body">
+				<div id="chart1"></div>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+
+
+<!-- plotly CDN -->
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript">
+
+    var test2chart = {{ graphTest2JSON | safe}};
+    Plotly.plot("chart1", test2chart,{});
+
+</script>
+
+{% endblock %}
