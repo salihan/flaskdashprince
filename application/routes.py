@@ -96,39 +96,66 @@ def index():
     query_usercountry = "SELECT country, COUNT(*) AS count FROM mdl_user GROUP BY country"
     df_usercountry = pd.read_sql(query_usercountry, engine)
 
+    # percubaan choropleth
     # fig_map = px.choropleth(df_usercountry, locations="country", color="count",
     #                         color_continuous_scale='Inferno',
     #                         scope='world',
     #                         projection='equirectangular')
     # fig_map.update_layout(margin=dict(l=0, r=0, t=0, b=0))
 
-    fig_map = go.Figure(data=go.Choropleth(
-        locations=df_usercountry['country'],
-        z=df_usercountry['count'],
-        colorscale='Inferno',
-        autocolorscale=False,
-        reversescale=True,
-        colorbar=dict(
-            x=0,
-            y=0.5,
-            len=0.5,
-            orientation='h',
-            title='Users Count'
-        ),
-    ))
+    # percubaan entah kali ke-berapa
+    # fig_map = go.Figure(data=go.Choropleth(
+    #     locations=df_usercountry['country'],
+    #     z=df_usercountry['count'],
+    #     colorscale='Inferno',
+    #     autocolorscale=False,
+    #     reversescale=True,
+    #     colorbar=dict(
+    #         x=0,
+    #         y=0.5,
+    #         len=0.5,
+    #         orientation='h',
+    #         title='Users Count'
+    #     ),
+    # ))
+    # # update layout
+    # fig_map.update_layout(
+    #     width=600,
+    #     geo=dict(
+    #         showframe=False,
+    #         showcoastlines=False,
+    #         projection_type='equirectangular'
+    #     ),
+    #     margin=dict(t=0, b=0, l=0, r=0),
+    #     paper_bgcolor='rgba(0,0,0,0)',
+    #     plot_bgcolor='rgba(0,0,0,0)',
+    # )
 
-    # update layout
-    fig_map.update_layout(
-        width=600,
-        geo=dict(
-            showframe=False,
-            showcoastlines=False,
-            projection_type='equirectangular'
-        ),
-        margin=dict(t=0, b=0, l=0, r=0),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-    )
+    # ---------- percubaan utk scattermapbox --------------
+    # I found the useful file and lets use it
+    loc_df = pd.read_csv('application/static/countries_codes_and_coordinates.csv')
+    # dlm file ni ada character yg tak diingini. lets remove it
+    loc_df.replace('"', '', regex=True, inplace=True)
+    # Join the two DataFrames on the Alpha-3 code column. But first, lets remove unwanted spaces
+    loc_df['Alpha-3 code'] = loc_df['Alpha-3 code'].str.strip()
+    joined_df = df_usercountry.merge(loc_df, left_on='country', right_on='Alpha-3 code')
+    # rename columns names to follow the standard
+    joined_df = joined_df.rename(columns={'count': 'user_count', 'Alpha-3 code': 'iso3', 'Latitude (average)': 'lat',
+                                          'Longitude (average)': 'lon'})
+    # I dunno why I have to do this.. last time it was error. SO..
+    # Convert lat and lon columns to string datatype
+    joined_df['lat'] = joined_df['lat'].astype(str)
+    joined_df['lon'] = joined_df['lon'].astype(str)
+    # Convert lat and lon values to float
+    joined_df['lat'] = joined_df['lat'].apply(lambda x: float(x))
+    joined_df['lon'] = joined_df['lon'].apply(lambda x: float(x))
+    #lastly, make the scattermap
+    fig_map = px.scatter_mapbox(joined_df, lat="lat", lon="lon", hover_name="Country", hover_data=["user_count"], zoom=1,
+                            color="user_count", size="user_count")
+    fig_map.update_layout(mapbox_style="carto-positron", margin=dict(t=0, b=0, l=0, r=0))
+
+
+    # ---------- end scattermapbox ------------------------
 
 
     graph4JSON = json.dumps(fig_map, cls=plotly.utils.PlotlyJSONEncoder)
