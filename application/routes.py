@@ -52,11 +52,21 @@ def index():
     # fig1.update_xaxes(showticklabels=False)
     # fig1.update_layout(margin=dict(l=0, r=10, t=30, b=0))
 
-    fig1 = px.pie(df_tlel, values='# of Students', names='Course Code', title='Total Learners in Each Lesson',
+    # fig1 = px.pie(df_tlel, values='# of Students', names='Course Code', title='Total Learners in Each Lesson',
+    #               height=200)
+    # fig1.update_traces(textposition='inside', showlegend=False)
+    # fig1.update_xaxes(showticklabels=False)
+    # fig1.update_layout(margin=dict(l=0, r=10, t=30, b=0), font=dict(size=10, color="RebeccaPurple"))
+
+    # pivot the data to create a matrix
+    # matrix = pd.pivot_table(df_tlel, values="# of Students", index=["Course Code"], columns=[])
+    # # plot the heatmap using Plotly
+    # fig1 = px.imshow(matrix, x=matrix.columns, y=matrix.index)
+
+    # treemap
+    fig1 = px.treemap(df_tlel, path=['Course Code'], values='# of Students', title='Total Learners in Each Lesson',
                   height=200)
-    fig1.update_traces(textposition='inside', showlegend=False)
-    fig1.update_xaxes(showticklabels=False)
-    fig1.update_layout(margin=dict(l=0, r=10, t=30, b=0), font=dict(size=10, color="RebeccaPurple"))
+    fig1.update_layout(margin=dict(l=0, r=10, t=30, b=0))
 
     graph1JSON = json.dumps(fig1, cls=plotly.utils.PlotlyJSONEncoder)
 
@@ -69,7 +79,7 @@ def index():
     """
     df_usersmontly = pd.read_sql(query_usersmontly, engine)
     fig2 = px.scatter(df_usersmontly, x='Month', y='New User', title='New Users Monthly',
-                      height=200, color='New User', color_continuous_scale='Bluered_r')
+                      height=200, color='New User')
     fig2.update_xaxes(showticklabels=False)
     fig2.update_layout(margin=dict(l=0, r=10, t=30, b=0), font=dict(size=10, color="RebeccaPurple"))
     # xaxis=dict(rangeslider=dict(visible=True)))
@@ -152,7 +162,7 @@ def index():
     #lastly, make the scattermap
     fig_map = px.scatter_mapbox(joined_df, lat="lat", lon="lon", hover_name="Country", hover_data=["user_count"], zoom=1,
                             color="user_count", size="user_count")
-    fig_map.update_layout(mapbox_style="carto-positron", margin=dict(t=0, b=0, l=0, r=0))
+    fig_map.update_layout(mapbox_style="carto-positron", margin=dict(t=0, b=0, l=0, r=0), height=300)
 
 
     # ---------- end scattermapbox ------------------------

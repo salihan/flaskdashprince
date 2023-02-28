@@ -7,9 +7,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/css/bootstrap.min.css" integrity="sha512-ZQ59JyL5+5o5vE/5fmhB9XZoWx+8N4qBbYwYpDqpVDBmxid8rDJ3RGaTF/k2gzMYOFIhRzCJf7VUHbbwU13EOw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.2/js/bootstrap.bundle.min.js" integrity="sha512-nZD9VZxsc6nZYU6Z/GIRwN+jp04wk3iNf1r3q1ehQIb9ZlLdC8avJlkg1SV2QJDRB5R5f5vS0EiypxE4Xp+WJQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    {% if title %}
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>-->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+   {% if title %}
         <title>Cassmile Insights - {{ title }}</title>
     {% else %}
         <title>Cassmile Insights</title>
@@ -21,28 +25,35 @@
 </head>
 <body>
 
-    <div class="collapse" id="navbarToggleExternalContent">
-      <div class="bg-light p-4">
+<!--    <div class="collapse" id="navbarToggleExternalContent">-->
+<!--      <div class="bg-light p-4">-->
 
-      </div>
-    </div>
+<!--      </div>-->
+<!--    </div>-->
     <nav class="navbar navbar-light bg-light">
       <div class="container-fluid">
           <a class="navbar-brand" href="#">
             <img src="{{url_for('static', filename = 'img/cass-logo.png')}}" alt="Logo" width="280" height="60" class="rounded float-start">
           </a>
+          <form class="d-flex">
+              <label for="start_date">Start Date: &nbsp;</label>
+              <input class="input-sm" type="text" id="start_date" name="start_date">&nbsp;&nbsp;&nbsp;
+              <label for="end_date">End Date: &nbsp;</label>
+              <input class="input-sm" type="text" id="end_date" name="end_date">
+          </form>
 <!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">-->
 <!--          <span class="navbar-toggler-icon"></span>-->
-          <form class="d-flex">
-            <div class="input-group date" id="datepicker">
-                <input type="text" class="form-control">
-                <span class="input-group-append">
-                    <span class="input-group-text bg-white d-block">
-                        <i class="fa fa-calendar"></i>
-                    </span>
-                </span>
-            </div>
-          </form>
+<!--          <form class="d-flex">-->
+<!--            <div class="input-group date" id="datepicker">-->
+<!--                <input type="text" class="form-control">-->
+<!--                <span class="input-group-append">-->
+<!--                    <span class="input-group-text bg-white d-block">-->
+<!--                        <i class="fa fa-calendar"></i>-->
+<!--                    </span>-->
+<!--                </span>-->
+<!--            </div>-->
+<!--          </form>-->
+
 
 <!--        </button>-->
 
@@ -66,9 +77,32 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script>
 <script type="text/javascript">
+<!--    $(function() {-->
+<!--        $('#datepicker').datepicker();-->
+<!--    });-->
     $(function() {
-        $('#datepicker').datepicker();
-    });
+        // Initialize the date pickers
+        $('#start_date').datepicker({
+          dateFormat: 'yy-mm-dd',
+          onSelect: function(selectedDate) {
+            // When the start date is changed, update the minimum date for the end date picker
+            $('#end_date').datepicker('option', 'minDate', selectedDate);
+          }
+        });
+        $('#end_date').datepicker({
+          dateFormat: 'yy-mm-dd',
+          onSelect: function(selectedDate) {
+            // When the end date is changed, update the maximum date for the start date picker
+            $('#start_date').datepicker('option', 'maxDate', selectedDate);
+          }
+        });
+
+        // Set the default values for the date pickers
+        var start_date = '{{ start_date }}';
+        var end_date = '{{ end_date }}';
+        $('#start_date').datepicker('setDate', start_date);
+        $('#end_date').datepicker('setDate', end_date);
+      });
 </script>
 
 </body>
