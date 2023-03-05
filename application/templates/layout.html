@@ -35,12 +35,19 @@
           <a class="navbar-brand" href="#">
             <img src="{{url_for('static', filename = 'img/cass-logo.png')}}" alt="Logo" width="280" height="60" class="rounded float-start">
           </a>
-          <form class="d-flex">
-              <label for="start_date">Start Date: &nbsp;</label>
-              <input class="input-sm" type="text" id="start_date" name="start_date">&nbsp;&nbsp;&nbsp;
-              <label for="end_date">End Date: &nbsp;</label>
-              <input class="input-sm" type="text" id="end_date" name="end_date">
-          </form>
+<!--          <form class="d-flex">-->
+<!--              <label for="start_date">Start Date: &nbsp;</label>-->
+<!--              <input class="input-sm" type="text" id="start_date" name="start_date">&nbsp;&nbsp;&nbsp;-->
+<!--              <label for="end_date">End Date: &nbsp;</label>-->
+<!--              <input class="input-sm" type="text" id="end_date" name="end_date">-->
+<!--          </form>-->
+            <form action="{{ url_for('index') }}" method="post">
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" value="{{ start_date }}">
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date" name="end_date" value="{{ end_date }}">
+                <input type="submit" value="Submit">
+            </form>
 <!--        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">-->
 <!--          <span class="navbar-toggler-icon"></span>-->
 <!--          <form class="d-flex">-->
