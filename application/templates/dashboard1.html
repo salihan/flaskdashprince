@@ -10,6 +10,51 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='loading.css') }}">
+    <link rel='stylesheet' href="{{url_for('static', filename='font-awesome/css/font-awesome.min.css')}}">
+
+    <style>
+        #mySidenav a {
+          position: absolute;
+          left: -80px;
+          transition: 0.3s;
+          padding: 15px;
+          width: 100px;
+          text-decoration: none;
+          font-size: 16px;
+          color: white;
+          border-radius: 0 5px 5px 0;
+        }
+
+        #mySidenav a:hover {
+          left: 0;
+        }
+
+        #dashboard {
+          top: 90px;
+          background-color: grey;
+        }
+
+        #lesson {
+          top: 150px;
+          background-color: #2196F3;
+        }
+
+        #learners {
+          top: 210px;
+          background-color: #FF9966;
+        }
+
+        #badge {
+          top: 270px;
+          background-color: #00cc66
+        }
+
+<!--        #contact2 {-->
+<!--          top: 410px;-->
+<!--          background-color: #9900cc-->
+<!--        }-->
+    </style>
 
    {% if title %}
         <title>Cassmile Insights - {{ title }}</title>
@@ -17,10 +62,15 @@
         <title>Cassmile Insights</title>
     {% endif %}
 
-    <link rel='stylesheet' href="{{url_for('static', filename='font-awesome/css/font-awesome.min.css')}}">
 </head>
 
 <body>
+    <div id="mySidenav" class="sidenav">
+      <a href="dashboard1" id="dashboard">Dashboard</a>
+          <a href="lesson" id="lesson">Lessons</a>
+          <a href="learners" id="learners">Learners</a>
+          <a href="badge" id="badge">Badges</a>
+    </div>
 
     <nav class="navbar navbar-light bg-light">
       <div class="container-fluid">
@@ -37,6 +87,12 @@
           </form>
       </div>
     </nav>
+
+    <div id="loading">
+        <div id="loading-bar">
+            <div class="loading-color"></div>
+        </div>
+    </div>
 
     <main>
         <div class="container">
@@ -253,6 +309,25 @@
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript">
+
+        // Get the form element
+        const form = document.querySelector('form');
+
+        // Get the loading element
+        const loading = document.getElementById('loading');
+
+        // Add an event listener to the form's submit event
+        form.addEventListener('submit', (event) => {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Show the loading element
+            loading.style.display = 'block';
+
+            // Submit the form
+            form.submit();
+        });
+
         var graphs1 = {{ graph1JSON | safe}};
         Plotly.plot("chart1", graphs1,{});
 

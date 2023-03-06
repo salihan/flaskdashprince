@@ -43,3 +43,8 @@
 .chartarea {
   margin: 0 auto;
 }
+
+.no-gutter>[class^="col-"]{
+  padding-left: 0;
+  padding-right: 0;
+}

@@ -371,6 +371,27 @@ def dashboard1():
                            graph4JSON=graph4JSON)
 
 
+@app.route('/dashboard2', methods=['GET', 'POST'])
+def dashboard2():
+    if request.method == 'GET':
+        # Get list of course titles from the database
+        query_courses = """
+            SELECT DISTINCT fullname
+            FROM mdl_course
+            ORDER BY fullname ASC;
+        """
+        courses_df = pd.read_sql(query_courses, con=engine)
+        courses = courses_df['fullname'].tolist()
+
+        # Set default course to the first one in the list
+        default_course = courses[0]
+
+        # Get data for the default course
+        # course_data = get_course_data(default_course)
+
+        return render_template('dashboard2.html', courses=courses, default_course=default_course)
+
+
 @app.route('/test2')
 def test2():
     # define SQL query and read data into a pandas dataframe
