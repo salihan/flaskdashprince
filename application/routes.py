@@ -373,23 +373,64 @@ def dashboard1():
 
 @app.route('/dashboard2', methods=['GET', 'POST'])
 def dashboard2():
+    courses_list = []
+    selected_course = 0
     if request.method == 'GET':
+        # Get the start and end dates from the log table
+        query = "SELECT MIN(timecreated) AS start_date, MAX(timecreated) AS end_date FROM mdl_logstore_standard_log;"
+        result = engine.execute(query).fetchone()
+        start_date = result[0].strftime('%Y-%m-%d')
+        end_date = result[1].strftime('%Y-%m-%d')
+
         # Get list of course titles from the database
-        query_courses = """
-            SELECT DISTINCT fullname
-            FROM mdl_course
-            ORDER BY fullname ASC;
-        """
-        courses_df = pd.read_sql(query_courses, con=engine)
-        courses = courses_df['fullname'].tolist()
+        query_courses = "SELECT DISTINCT fullname, id FROM mdl_course where timecreated BETWEEN %s AND %s ORDER BY fullname ASC;"
+        courses_df = pd.read_sql(query_courses, con=engine, params=[start_date, end_date])
+        # courses = courses_df['fullname'].tolist()
+        courses_list = [(row['fullname'], row['id']) for _, row in courses_df.iterrows()]
 
         # Set default course to the first one in the list
-        default_course = courses[0]
+        default_course = courses_list[0][1]
+        selected_course = str(default_course)
+        # print(courses_list[0][0])
 
-        # Get data for the default course
-        # course_data = get_course_data(default_course)
+    else:
+        # Get selected date range from date slider
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
+        selected_course = request.form.get('course-selector', default='1', type=str)
+        # selected_course = request.form['course-selector']
 
-        return render_template('dashboard2.html', courses=courses, default_course=default_course)
+        # Get list of course titles from the database
+        query_courses = "SELECT DISTINCT fullname, id FROM mdl_course where timecreated BETWEEN %s AND %s ORDER BY fullname ASC;"
+        courses_df = pd.read_sql(query_courses, con=engine, params=[start_date, end_date])
+        # courses = courses_df['fullname'].tolist()
+        courses_list = [(row['fullname'], row['id']) for _, row in courses_df.iterrows()]
+
+    # 1) execute the query for enrolled students/learners
+    query_enrolled = """SELECT COUNT(DISTINCT ue.userid) AS 'Enrolled' 
+        FROM mdl_user_enrolments ue INNER JOIN mdl_enrol e ON ue.enrolid = e.id 
+        where e.courseid = %s AND FROM_UNIXTIME(ue.timecreated, '%%Y-%%m-%%d') BETWEEN %s AND %s"""
+    df_enrolled = pd.read_sql(query_enrolled, engine, params=[selected_course, start_date, end_date])
+    num_enrolled = df_enrolled['Enrolled'].iloc[0]
+    print("selected_course: "+selected_course)
+    return render_template('dashboard2.html',
+                           start_date=start_date, end_date=end_date,
+                           courses=courses_list, selected_course=selected_course,
+                           num_enrolled=num_enrolled)
+
+    # 2) Cert
+    query_certified = """
+            SELECT (
+                SELECT COUNT(cmc.id) FROM mdl_course_modules_completion cmc
+                    INNER JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
+                    INNER JOIN mdl_modules m ON cm.module = m.id
+                    WHERE (cm.module = 24 OR cm.module = 14) 
+                        AND cmc.completionstate > 0 
+                        AND cmc.timemodified BETWEEN %s AND %s 
+                        AND cm.course = %s) 
+            + ( SELECT COUNT(id) FROM mdl_customcert_issues ) AS cert
+        """
+
 
 
 @app.route('/test2')
