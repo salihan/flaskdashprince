@@ -99,7 +99,7 @@
         <div class="container">
 
             <div class="row align-items-left">
-                <label for="course_select" class="col-sm-2 col-form-label text-end">Select Course: {{ selected_course }}</label>
+                <label for="course-selector" class="col-sm-2 col-form-label text-end">Select Course: {{ selected_course }}</label>
                 <div class="col-sm-10">
                     <select name="course-selector" id="course-selector" class="form-select" onchange="this.form.submit()">
                       {% for course in courses %}
@@ -137,6 +137,120 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Certs -->
+                            <div class="col-xl-3 col-md-6 mb-1">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Certified</div>
+                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_certified }}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Badges -->
+                            <div class="col-xl-3 col-md-6 mb-1">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Badges</div>
+                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_badges }}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <!-- Watch -->
+                            <div class="col-xl-3 col-md-6 mb-1">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Watch</div>
+                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_watch }}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reflect -->
+                            <div class="col-xl-3 col-md-6 mb-1">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Reflect</div>
+                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_reflect }}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Digfurther -->
+                            <div class="col-xl-3 col-md-6 mb-1">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Dig Further</div>
+                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_digfurther }}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- uLesson -->
+                            <div class="col-xl-3 col-md-6 mb-1">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    µLesson</div>
+                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_ulesson }}</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
 
                         </div>
 

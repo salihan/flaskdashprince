@@ -402,7 +402,7 @@ def dashboard2():
 
         # Get list of course titles from the database
         query_courses = "SELECT DISTINCT fullname, id FROM mdl_course where timecreated BETWEEN %s AND %s ORDER BY fullname ASC;"
-        courses_df = pd.read_sql(query_courses, con=engine, params=[start_date, end_date])
+        courses_df = pd.read_sql(query_courses, con=engine, params=(start_date, end_date))
         # courses = courses_df['fullname'].tolist()
         courses_list = [(row['fullname'], row['id']) for _, row in courses_df.iterrows()]
 
@@ -410,26 +410,82 @@ def dashboard2():
     query_enrolled = """SELECT COUNT(DISTINCT ue.userid) AS 'Enrolled' 
         FROM mdl_user_enrolments ue INNER JOIN mdl_enrol e ON ue.enrolid = e.id 
         where e.courseid = %s AND FROM_UNIXTIME(ue.timecreated, '%%Y-%%m-%%d') BETWEEN %s AND %s"""
-    df_enrolled = pd.read_sql(query_enrolled, engine, params=[selected_course, start_date, end_date])
+    df_enrolled = pd.read_sql(query_enrolled, engine, params=(selected_course, start_date, end_date))
     num_enrolled = df_enrolled['Enrolled'].iloc[0]
     print("selected_course: "+selected_course)
-    return render_template('dashboard2.html',
-                           start_date=start_date, end_date=end_date,
-                           courses=courses_list, selected_course=selected_course,
-                           num_enrolled=num_enrolled)
 
     # 2) Cert
     query_certified = """
-            SELECT (
-                SELECT COUNT(cmc.id) FROM mdl_course_modules_completion cmc
-                    INNER JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
-                    INNER JOIN mdl_modules m ON cm.module = m.id
-                    WHERE (cm.module = 24 OR cm.module = 14) 
-                        AND cmc.completionstate > 0 
-                        AND cmc.timemodified BETWEEN %s AND %s 
-                        AND cm.course = %s) 
-            + ( SELECT COUNT(id) FROM mdl_customcert_issues ) AS cert
-        """
+                SELECT ( SELECT COUNT(cmc.id) FROM mdl_course_modules_completion cmc
+                        INNER JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
+                        INNER JOIN mdl_modules m ON cm.module = m.id
+                        WHERE (cm.module = 24 OR cm.module = 14) 
+                            AND cmc.completionstate > 0 
+                            AND cmc.timemodified BETWEEN %s AND %s 
+                            AND cm.course = %s ) +
+                ( SELECT COUNT(cci.id) FROM mdl_customcert_issues cci
+                    INNER JOIN mdl_customcert cc ON cci.customcertid = cc.id
+                    WHERE cc.course = 229 ) AS cert
+            """
+    df_certified = pd.read_sql(query_certified, engine, params=(start_date, end_date, selected_course))
+    num_certified = df_certified['cert'].iloc[0]
+
+    # 3) Badges
+    query_badges = """ SELECT b.name, COUNT(DISTINCT(bcm.userid)) AS bil
+        FROM mdl_badge_criteria_met bcm
+        INNER JOIN mdl_badge_issued bi ON bcm.issuedid=bi.id
+        INNER JOIN mdl_badge_criteria bc ON bcm.critid = bc.id
+        INNER JOIN mdl_badge b ON bc.badgeid = b.id
+        WHERE bcm.issuedid IS NOT NULL AND b.courseid = %s """
+    df_badges = pd.read_sql(query_badges, engine, params=(selected_course,))
+    num_badges = df_badges['bil'].iloc[0]
+    # print(df_badges)
+
+    # 5) watch
+    query_watch = """ select shortname, count(distinct(userid)) as 'count_users' from watch 
+                where timecreated BETWEEN %s AND %s AND courseid = %s """
+    df_watch = pd.read_sql(query_watch, engine, params=(start_date, end_date, selected_course))
+    num_watch = df_watch['count_users'].iloc[0]
+
+    # 6) reflect
+    query_reflect = """  SELECT c.shortname, count(u.id) AS total_reflect
+                    FROM mdl_quiz q                    
+                    inner JOIN mdl_quiz_grades qg ON q.id = qg.quiz
+                    inner JOIN mdl_course c ON q.course = c.id
+                    inner JOIN mdl_user u ON qg.userid = u.id
+                    where q.timecreated BETWEEN %s AND %s AND c.id = %s """
+    df_reflect = pd.read_sql(query_reflect, engine, params=(start_date, end_date, selected_course))
+    num_reflect = df_reflect['total_reflect'].iloc[0]
+
+    # 7) digfurther
+    query_digfurther = """  SELECT p.name, c.shortname, COUNT(p.id) AS digfurther
+                        FROM mdl_page p 
+                        INNER JOIN mdl_course c ON c.id = p.course                        
+                        where p.timemodified BETWEEN %s AND %s AND c.id = %s """
+    df_digfurther = pd.read_sql(query_digfurther, engine, params=(start_date, end_date, selected_course))
+    num_digfurther = df_digfurther['digfurther'].iloc[0]
+
+    # 8) uLesson
+    num_ulesson = 0
+    if not df_digfurther.empty:
+        df_ulesson = df_digfurther[df_digfurther['name'].str.contains('Lesson', na=False)]
+        if not df_ulesson.empty:
+            num_ulesson = df_ulesson['digfurther'].iloc[0]
+
+    # print(len(df_ulesson))
+
+
+
+    return render_template('dashboard2.html',
+                           start_date=start_date, end_date=end_date,
+                           courses=courses_list, selected_course=selected_course,
+                           num_enrolled=num_enrolled,
+                           num_certified=num_certified,
+                           num_badges=num_badges,
+                           num_watch=num_watch,
+                           num_reflect=num_reflect,
+                           num_digfurther=num_digfurther,
+                           num_ulesson=num_ulesson)
 
 
 
