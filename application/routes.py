@@ -235,7 +235,7 @@ def dashboard1():
     num_courses = len(pd.read_sql_query(query1, engine, params=[start_date, end_date]))
 
     # 2) Calculate the number of users
-    query2 = "SELECT * FROM mdl_user where FROM_UNIXTIME(timecreated, '%%Y-%%m-%%d') BETWEEN %s AND %s"
+    query2 = "SELECT * FROM mdl_user where timecreated BETWEEN %s AND %s"
     num_users = len(pd.read_sql(query2, engine, params=[start_date, end_date]))
 
     # 3) execute the query for enrolled students/learners
@@ -286,14 +286,14 @@ def dashboard1():
 
     # 6) new users monthly
     query_usersmontly = """
-        SELECT year, month, day, COUNT(*) AS 'New User'
-        FROM mdl_user WHERE FROM_UNIXTIME(timecreated, '%%Y-%%m-%%d') BETWEEN %s AND %s
-        GROUP BY month
-        ORDER BY timecreated DESC;
+        SELECT timecreated_year, timecreated_month as 'Month', timecreated_day, COUNT(*) AS 'New User'
+        FROM mdl_user WHERE timecreated BETWEEN %s AND %s
+        GROUP BY timecreated_month
+        ORDER BY timecreated_year DESC, timecreated_month DESC, timecreated_day DESC;
         """
     df_usersmontly = pd.read_sql(query_usersmontly, engine, params=[start_date, end_date])
-    fig2 = px.scatter(df_usersmontly, x='month', y='New User', title='New Users Monthly',
-                      height=200, color='New User', hover_data=['year', 'day'])
+    fig2 = px.scatter(df_usersmontly, x='Month', y='New User', title='New Users Monthly',
+                      height=200, color='New User', hover_data=['timecreated_year', 'timecreated_day'])
     fig2.update_xaxes(showticklabels=False)
     fig2.update_layout(margin=dict(l=0, r=10, t=30, b=0), font=dict(size=10, color="RebeccaPurple"))
     # xaxis=dict(rangeslider=dict(visible=True)))
@@ -304,7 +304,7 @@ def dashboard1():
         SELECT year, month, day, COUNT(*) AS 'Access Frequency'
         FROM mdl_logstore_standard_log WHERE timecreated BETWEEN %s AND %s
         GROUP BY month
-        ORDER BY timecreated DESC;
+        ORDER BY year DESC, month DESC, day DESC;
         """
     df_accessfreq = pd.read_sql(query_accessfreq, engine, params=[start_date, end_date])
     fig3 = px.scatter(df_accessfreq, x='month', y='Access Frequency', title='Monthly Access Frequency', height=200,
@@ -328,33 +328,10 @@ def dashboard1():
 
     # 9) users' country
     query_usercountry = """SELECT country, COUNT(*) AS count FROM mdl_user 
-                        WHERE FROM_UNIXTIME(timecreated, '%%Y-%%m-%%d') BETWEEN %s AND %s GROUP BY country"""
+                        WHERE timecreated BETWEEN %s AND %s GROUP BY country"""
     df_usercountry = pd.read_sql(query_usercountry, engine, params=[start_date, end_date])
-    # ---------- percubaan utk scattermapbox --------------
-    # I found the useful file and lets use it
-    loc_df = pd.read_csv('application/static/countries_codes_and_coordinates.csv')
-    # dlm file ni ada character yg tak diingini. lets remove it
-    loc_df.replace('"', '', regex=True, inplace=True)
-    # Join the two DataFrames on the Alpha-3 code column. But first, lets remove unwanted spaces
-    loc_df['Alpha-3 code'] = loc_df['Alpha-3 code'].str.strip()
-    joined_df = df_usercountry.merge(loc_df, left_on='country', right_on='Alpha-3 code')
-    # rename columns names to follow the standard
-    joined_df = joined_df.rename(columns={'count': 'user_count', 'Alpha-3 code': 'iso3', 'Latitude (average)': 'lat',
-                                          'Longitude (average)': 'lon'})
-    # I dunno why I have to do this.. last time it was error. so.. buat je la
-    # Convert lat and lon columns to string datatype
-    joined_df['lat'] = joined_df['lat'].astype(str)
-    joined_df['lon'] = joined_df['lon'].astype(str)
-    # Convert lat and lon values to float
-    joined_df['lat'] = joined_df['lat'].apply(lambda x: float(x))
-    joined_df['lon'] = joined_df['lon'].apply(lambda x: float(x))
-    # lastly, make the scattermap
-    fig_map = px.scatter_mapbox(joined_df, lat="lat", lon="lon", hover_name="Country", hover_data=["user_count"],
-                                zoom=1.5, color="user_count", size="user_count")
-    fig_map.update_layout(mapbox_style="carto-positron", margin=dict(t=0, b=0, l=0, r=0), height=300)
-    # ---------- end scattermapbox ------------------------
+    fig_map = usermap(df_usercountry)
     graph4JSON = json.dumps(fig_map, cls=plotly.utils.PlotlyJSONEncoder)
-
 
 
     # Render the dashboard template
@@ -416,13 +393,13 @@ def dashboard2():
 
     # 2) Cert
     query_certified = """
-                SELECT ( SELECT COUNT(cmc.id) FROM mdl_course_modules_completion cmc
-                        INNER JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
-                        INNER JOIN mdl_modules m ON cm.module = m.id
-                        WHERE (cm.module = 24 OR cm.module = 14) 
-                            AND cmc.completionstate > 0 
-                            AND cmc.timemodified BETWEEN %s AND %s 
-                            AND cm.course = %s ) +
+                    SELECT ( SELECT COUNT(cmc.id) FROM mdl_course_modules_completion cmc
+                            INNER JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
+                            INNER JOIN mdl_modules m ON cm.module = m.id
+                            WHERE (cm.module = 24 OR cm.module = 14) 
+                                AND cmc.completionstate > 0 
+                                AND cmc.timemodified BETWEEN %s AND %s 
+                                AND cm.course = %s ) +
                 ( SELECT COUNT(cci.id) FROM mdl_customcert_issues cci
                     INNER JOIN mdl_customcert cc ON cci.customcertid = cc.id
                     WHERE cc.course = 229 ) AS cert
@@ -442,13 +419,13 @@ def dashboard2():
     # print(df_badges)
 
     # 5) watch
-    query_watch = """ select shortname, count(distinct(userid)) as 'count_users' from watch 
+    query_watch = """ select shortname, userid, count(distinct(userid)) as 'count_users' from watch 
                 where timecreated BETWEEN %s AND %s AND courseid = %s """
     df_watch = pd.read_sql(query_watch, engine, params=(start_date, end_date, selected_course))
     num_watch = df_watch['count_users'].iloc[0]
 
     # 6) reflect
-    query_reflect = """  SELECT c.shortname, count(u.id) AS total_reflect
+    query_reflect = """  SELECT c.shortname, u.id as userid, count(u.id) AS total_reflect
                     FROM mdl_quiz q                    
                     inner JOIN mdl_quiz_grades qg ON q.id = qg.quiz
                     inner JOIN mdl_course c ON q.course = c.id
@@ -472,9 +449,66 @@ def dashboard2():
         if not df_ulesson.empty:
             num_ulesson = df_ulesson['digfurther'].iloc[0]
 
-    # print(len(df_ulesson))
+    # 9) user map
+    query_usercountry2 = """SELECT u.country, COUNT(u.id) AS count FROM mdl_user u
+                            inner join mdl_user_enrolments ue on u.id = ue.userid
+                            INNER JOIN mdl_enrol e ON ue.enrolid = e.id
+                            WHERE u.timecreated BETWEEN %s AND %s AND e.courseid = %s
+                            GROUP BY country"""
 
+    df_usercountry2 = pd.read_sql(query_usercountry2, engine, params=(start_date, end_date, selected_course))
+    fig_map = usermap(df_usercountry2)
+    graph4JSON = json.dumps(fig_map, cls=plotly.utils.PlotlyJSONEncoder)
 
+    # 10) enrolled date
+    query_enrolleddate = """SELECT ue.userid, u.email, FROM_UNIXTIME(ue.timecreated, '%%Y-%%m-%%d') AS 'Enrolled Date' 
+                        FROM mdl_user_enrolments ue 
+                        INNER JOIN mdl_enrol e ON ue.enrolid = e.id 
+                        INNER JOIN mdl_user u ON ue.userid = u.id
+                        WHERE FROM_UNIXTIME(ue.timecreated, '%%Y-%%m-%%d') BETWEEN %s AND %s AND e.courseid = %s"""
+    df_enrolleddate = pd.read_sql(query_enrolleddate, engine, params=(start_date, end_date, selected_course))
+
+    # Create the table trace
+    table_trace = go.Table(
+        header=dict(values=['User ID', 'Email', 'Enrolled Date']),
+        cells=dict(values=[df_enrolleddate['userid'], df_enrolleddate['email'], df_enrolleddate['Enrolled Date']])
+    )
+
+    # Convert the table trace to JSON
+    table_data = [table_trace.to_plotly_json()]
+    table_data = json.dumps(table_data)
+
+    # 11) new users monthly based on selected course
+    query_newusers_oncourse = """
+                        SELECT u.timecreated_year, u.timecreated_month as 'Month', u.timecreated_day, COUNT(u.id) AS 'New User'
+                        FROM mdl_user u 
+                        INNER JOIN mdl_user_enrolments ue ON u.id = ue.userid
+                        INNER JOIN mdl_enrol e ON ue.enrolid = e.id
+                        WHERE u.timecreated BETWEEN %s AND %s AND e.courseid = %s
+                        GROUP BY u.timecreated_month
+                        ORDER BY u.timecreated_year DESC, u.timecreated_month DESC, u.timecreated_day DESC"""
+    df_newusers_oncourse = pd.read_sql(query_newusers_oncourse, engine, params=(start_date, end_date, selected_course))
+    fig_newusers_oncourse = px.scatter(df_newusers_oncourse, x='Month', y='New User', title='New Users Monthly',
+                      height=200, color='New User', hover_data=['timecreated_year', 'timecreated_day'])
+    fig_newusers_oncourse.update_xaxes(showticklabels=False)
+    fig_newusers_oncourse.update_layout(margin=dict(l=0, r=10, t=30, b=0), font=dict(size=10, color="RebeccaPurple"))
+    newusers_oncourse_JSON = json.dumps(fig_newusers_oncourse, cls=plotly.utils.PlotlyJSONEncoder)
+
+    # 12) monthly access frequency based on selected course
+    query_accessfreq = """
+            SELECT year, month, day, COUNT(*) AS 'Access Frequency'
+            FROM mdl_logstore_standard_log WHERE timecreated BETWEEN %s AND %s AND courseid = %s
+            GROUP BY month
+            ORDER BY year DESC, month DESC, day DESC;
+            """
+    df_accessfreq = pd.read_sql(query_accessfreq, engine, params=[start_date, end_date, selected_course])
+    fig3 = px.scatter(df_accessfreq, x='month', y='Access Frequency', title='Monthly Access Frequency', height=200,
+                      trendline="ols", hover_data=['year', 'day'])
+    fig3.update_xaxes(showticklabels=False)
+    fig3.update_layout(margin=dict(l=0, r=10, t=30, b=0), font=dict(size=10, color="RebeccaPurple"))
+    monthly_access_JSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
+
+    # ------ render -----------
 
     return render_template('dashboard2.html',
                            start_date=start_date, end_date=end_date,
@@ -485,7 +519,11 @@ def dashboard2():
                            num_watch=num_watch,
                            num_reflect=num_reflect,
                            num_digfurther=num_digfurther,
-                           num_ulesson=num_ulesson)
+                           num_ulesson=num_ulesson,
+                           graph4JSON=graph4JSON,
+                           table_data=table_data,
+                           newusers_oncourse_JSON=newusers_oncourse_JSON,
+                           monthly_access_JSON=monthly_access_JSON)
 
 
 
@@ -565,3 +603,29 @@ def test3():
 
     return render_template('test3.html', plot_div=plot_div, table=table, min_date=min_date, max_date=max_date)
 
+
+def usermap(dfcountry):
+    # ---------- percubaan utk scattermapbox --------------
+    # I found the useful file and lets use it
+    loc_df = pd.read_csv('application/static/countries_codes_and_coordinates.csv')
+    # dlm file ni ada character yg tak diingini. lets remove it
+    loc_df.replace('"', '', regex=True, inplace=True)
+    # Join the two DataFrames on the Alpha-3 code column. But first, lets remove unwanted spaces
+    loc_df['Alpha-3 code'] = loc_df['Alpha-3 code'].str.strip()
+    joined_df = dfcountry.merge(loc_df, left_on='country', right_on='Alpha-3 code')
+    # rename columns names to follow the standard
+    joined_df = joined_df.rename(columns={'count': 'user_count', 'Alpha-3 code': 'iso3', 'Latitude (average)': 'lat',
+                                          'Longitude (average)': 'lon'})
+    # I dunno why I have to do this.. last time it was error. so.. buat je la
+    # Convert lat and lon columns to string datatype
+    joined_df['lat'] = joined_df['lat'].astype(str)
+    joined_df['lon'] = joined_df['lon'].astype(str)
+    # Convert lat and lon values to float
+    joined_df['lat'] = joined_df['lat'].apply(lambda x: float(x))
+    joined_df['lon'] = joined_df['lon'].apply(lambda x: float(x))
+    # lastly, make the scattermap
+    fig_map = px.scatter_mapbox(joined_df, lat="lat", lon="lon", hover_name="Country", hover_data=["user_count"],
+                                zoom=1.5, color="user_count", size="user_count")
+    fig_map.update_layout(mapbox_style="carto-positron", margin=dict(t=0, b=0, l=0, r=0), height=300)
+    return fig_map
+    # ---------- end scattermapbox ------------------------

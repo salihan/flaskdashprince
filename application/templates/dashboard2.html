@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="{{url_for('static', filename = 'main.css')}}" type="text/css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='loading.css') }}">
     <link rel='stylesheet' href="{{url_for('static', filename='font-awesome/css/font-awesome.min.css')}}">
 
@@ -56,12 +57,6 @@
 <!--        }-->
     </style>
 
-   {% if title %}
-        <title>Cassmile Insights - {{ title }}</title>
-    {% else %}
-        <title>Cassmile Insights</title>
-    {% endif %}
-
 </head>
 
 <body>
@@ -98,6 +93,7 @@
     <main>
         <div class="container">
 
+            <!--dropdown-select-->
             <div class="row align-items-left">
                 <label for="course-selector" class="col-sm-2 col-form-label text-end">Select Course: {{ selected_course }}</label>
                 <div class="col-sm-10">
@@ -114,148 +110,119 @@
                 </div>
             </div>
 
+            <!------------------------------------>
+
             <div class="row">
+
                 <div class="col-md-12 col-sm-12 col-xm-12">
+
                     <div class="ml-auto mr-auto">
 
                         <div class="row">
 
-                            <!-- Learners -->
-                            <div class="col-xl-3 col-md-6 mb-1">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Number of Learners</div>
-                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_enrolled }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter primary">
+                                <i class="fa fa-slideshare"></i>
+                                <span class="count-numbers">{{ num_enrolled }}</span>
+                                <span class="count-name">Learners</span>
+                              </div>
                             </div>
 
-                            <!-- Certs -->
-                            <div class="col-xl-3 col-md-6 mb-1">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Certified</div>
-                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_certified }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter danger">
+                                <i class="fa fa-graduation-cap"></i>
+                                <span class="count-numbers">{{ num_certified }}</span>
+                                <span class="count-name">Certified</span>
+                              </div>
                             </div>
 
-                            <!-- Badges -->
-                            <div class="col-xl-3 col-md-6 mb-1">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Badges</div>
-                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_badges }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter success">
+                                <i class="fa fa-ticket"></i>
+                                <span class="count-numbers">{{num_badges}}</span>
+                                <span class="count-name">Badges</span>
+                              </div>
                             </div>
 
-                        </div>
-
-                        <div class="row">
-
-                            <!-- Watch -->
-                            <div class="col-xl-3 col-md-6 mb-1">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Watch</div>
-                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_watch }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter info">
+                                <i class="fa fa-pencil"></i>
+                                <span class="count-numbers">{{num_ulesson}}</span>
+                                <span class="count-name">&#956;Lesson</span>
+                              </div>
                             </div>
 
-                            <!-- Reflect -->
-                            <div class="col-xl-3 col-md-6 mb-1">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Reflect</div>
-                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_reflect }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter pinkcat">
+                                <i class="fa fa-laptop"></i>
+                                <span class="count-numbers">{{num_watch}}</span>
+                                <span class="count-name">Watched</span>
+                              </div>
                             </div>
 
-                            <!-- Digfurther -->
-                            <div class="col-xl-3 col-md-6 mb-1">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    Dig Further</div>
-                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_digfurther }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter purplecat">
+                                <i class="fa fa-mail-reply-all"></i>
+                                <span class="count-numbers">{{num_reflect}}</span>
+                                <span class="count-name">Reflected</span>
+                              </div>
                             </div>
 
-                            <!-- uLesson -->
-                            <div class="col-xl-3 col-md-6 mb-1">
-                                <div class="card border-left-success shadow h-100 py-2">
-                                    <div class="card-body">
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col mr-2">
-                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                    µLesson</div>
-                                                <div class="h5 mb-0 font-weight-bold text-primary text-gray-800">{{ num_ulesson }}</div>
-                                            </div>
-                                            <div class="col-auto">
-                                                <i class="fa fa-slideshare fa-2x text-gray-300"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter yellowcat">
+                                <i class="fa fa-chevron-down"></i>
+                                <span class="count-numbers">{{num_digfurther}}</span>
+                                <span class="count-name">Dig Further</span>
+                              </div>
                             </div>
 
-
+                            <div class="col-md-1" style="width: 12.499999995%; flex: 0 0 12.499%;max-width: 12.499%;">
+                              <div class="card-counter greencat">
+                                <i class="fa fa-users"></i>
+                                <span class="count-numbers">0</span>
+                                <span class="count-name">Involved</span>
+                              </div>
+                            </div>
 
                         </div>
 
                     </div>
                 </div>
+
+            </div>
+
+            <!------------------------------------>
+
+            <!--2nd row-->
+            <div class="row">
+
+                <div class="col-xl-6 col-lg-7">
+                            <div class="card shadow mb-1">
+                                <div class="card-body">
+                                    <div id="chart1"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                <div class="col-xl-6 col-lg-7">
+                            <div class="card shadow mb-1">
+                                <div class="card-body">
+                                    <div id="chart2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+            </div>
+
+            <!--3rd row-->
+            <div class="row">
+
+                <div class="col-xl-6 col-lg-7" id="table"></div>
+
+                <div class="col-xl-6 col-lg-7 columnformap">
+                    <div id="chart4" style="margin-top: 0px; z-index:-1;"></div>
+                </div>
+
             </div>
 
 
@@ -264,10 +231,42 @@
     </main>
     </form>
 
+    <style>
+
+        .columnformap {
+            flex: 1;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 100%;
+        }
+
+        #table {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border-collapse: collapse;
+        }
+
+        #table tr:first-child {
+            border-top: 1px solid #ccc;
+        }
+
+        #table tr:last-child {
+            border-bottom: 1px solid #ccc;
+        }
+
+        #table td, #table th {
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+    </style>
 
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
+
+        document.addEventListener("DOMContentLoaded", function() {
         let selected_course = "{{ selected_course }}";
         let course_selector = document.getElementById("course-selector");
         for (let option of course_selector.options) {
@@ -276,7 +275,30 @@
             break;
           }
         }
-      });
+        });
+
+        var graphs1 = {{ newusers_oncourse_JSON | safe}};
+        Plotly.plot("chart1", graphs1,{});
+
+        var graphs2 = {{ monthly_access_JSON | safe}};
+        Plotly.plot("chart2", graphs2,{});
+
+        var graphs4 = {{ graph4JSON | safe}};
+        var layout = {
+			height : 400,
+			width : 550,
+			title : 'Demo',
+			tracetoggle: false
+		};
+        Plotly.plot("chart4", graphs4, layout, {displayModeBar: false});
+
+        var tableData = {{ table_data|safe }};
+        var tableLayout = {
+          margin: {t: 0, b: 0, l: 10, r: 10},
+          padding: {t: 0, b: 0, l: 0, r: 0}
+        };
+        Plotly.newPlot('table', tableData, tableLayout);
+
     </script>
 
 
